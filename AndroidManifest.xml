@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="tournament.app"
+          android:versionCode="1"
+          android:versionName="1.0" >
+
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="13" />
+
+    <application android:icon="@drawable/ic_launcher"
+                 android:label="@string/app_name" >
+        
+        <activity android:name=".HomeActivity"
+                  android:label="@string/app_name" 
+                  android:theme="@style/Theme.home" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".PlayerEntry"
+                  android:label="@string/app_name"
+                  android:theme="@style/Theme.PlayerEntry" >
+        </activity>
+
+        <activity android:name=".TournamentEntry"
+                  android:label="@string/app_name"
+                  android:theme="@style/Theme.TournamentEntry" >
+        </activity>
+
+        <activity android:name=".EntrantList"
+                  android:label="@string/app_name"
+                  android:theme="@style/Theme.entrants" >
+        </activity>
+
+        <activity android:name=".Bracket"
+                  android:label="@string/app_name"
+                  android:theme="@style/Theme.Bracket" >
+        </activity>        
+
+        <activity android:name=".ResultEntry"
+                  android:label="@string/app_name"
+                  android:theme="@style/Theme.ResultEntry" >
+        </activity>        
+    
+    </application>
+
+</manifest>

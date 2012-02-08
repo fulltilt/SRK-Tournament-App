@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="Theme.home" parent="Theme.Sherlock">
+        <item name="abIcon">@drawable/ic_menu_home</item>
+        <item name="abBackground">@drawable/actionbar_background</item>
+        <item name="abTitle">Tournament List</item>
+  </style>    
+  
+  <style name="Theme.TournamentEntry" parent="Theme.Sherlock">
+        <item name="abIcon">@drawable/ic_menu_home</item>
+        <item name="abBackground">@drawable/actionbar_background</item>
+        <item name="abTitle">Create Tournament</item>
+  </style>
+  
+  <style name="Theme.entrants" parent="Theme.Sherlock">
+        <item name="abIcon">@drawable/ic_menu_home</item>
+        <item name="abBackground">@drawable/actionbar_background</item>
+        <item name="abTitle">Entrants</item>
+  </style>  
+
+  <style name="Theme.PlayerEntry" parent="Theme.Sherlock">
+        <item name="abIcon">@drawable/ic_menu_home</item>
+        <item name="abBackground">@drawable/actionbar_background</item>
+        <item name="abTitle">Player Entry</item>
+  </style>
+  
+  <style name="Theme.Bracket" parent="Theme.Sherlock">
+        <item name="abIcon">@drawable/ic_menu_home</item>
+        <item name="abBackground">@drawable/actionbar_background</item>
+        <item name="abTitle">Bracket</item>
+  </style>  
+
+  <style name="Theme.ResultEntry" parent="Theme.Sherlock">
+        <item name="abIcon">@drawable/ic_menu_home</item>
+        <item name="abBackground">@drawable/actionbar_background</item>
+        <item name="abTitle">Bracket</item>
+  </style>    
+</resources>

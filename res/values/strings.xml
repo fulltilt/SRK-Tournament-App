@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">TournamentApp</string>
+    <string name="labelTournament">Tournament Name:</string>
+    <string name="labelName">Enter Player Name:</string>
+    <string name="labelPhone">Enter Player Phone:</string>
+    <string name="labelDate">Date of Tournament:</string>
+    <string name="labelWinners">Winners Bracket:</string>
+    <string name="labelLosers">Losers Bracket:</string>
+    <string name="labelFormat">Format:</string>
+    <string name="labelSingleFormat">Single</string>
+    <string name="labelDoubleFormat">Double</string>
+
+<!--      
+    <string name=""></string>
+-->
+</resources>
