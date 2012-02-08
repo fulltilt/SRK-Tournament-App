@@ -3,6 +3,9 @@ package tournament.app;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.viewpagerindicator.TitleProvider;
+
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -25,8 +28,9 @@ import android.widget.Toast;
 import android.support.v4.view.MenuItem;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import com.viewpagerindicator.TitleProvider;
 
-public class Bracket extends FragmentActivity {
+public class Bracket extends FragmentActivity implements TitleProvider {
 	private static final String TAG = "Bracket";
 	private DBAdapter dbAdapter;
 	private Cursor cursor;
@@ -41,9 +45,22 @@ public class Bracket extends FragmentActivity {
 	private ArrayList<String> winnersListR3 = new ArrayList<String>(4);		// after 2nd round, there are 4 players left in the winners bracket
 	private ArrayList<String> winnersListR4 = new ArrayList<String>(2);		// after 3rd round, there are 2 players left in the winners bracket
 	private String tempP1, tempP2;
-	
+    
+	private static String[] tabTitles = new String[] { "Round 1", "Quarterfinals", "Semifinals", "Finals"};
+    private final Context context;
+    
+    public Bracket(Context context)
+    {
+        this.context = context;
+    }
+
+    // This is the only methods from TitleProvider and should return the title of page at the specified position. We return the relevant title from the titles array.
+    public String getTitle(int position)
+    {
+        return tabTitles[position];
+    }
+    
     /** Called when the activity is first created. */
-    @Override
     public void onCreate(Bundle savedInstanceState) {
     	Log.d(TAG, "In onCreate()");
     	

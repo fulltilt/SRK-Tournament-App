@@ -12,10 +12,7 @@
         <activity android:name=".HomeActivity"
                   android:label="@string/app_name" 
                   android:theme="@style/Theme.home" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         
         <activity android:name=".PlayerEntry"
@@ -38,9 +35,12 @@
                   android:theme="@style/Theme.Bracket" >
         </activity>        
 
-        <activity android:name=".ResultEntry"
-                  android:label="@string/app_name"
-                  android:theme="@style/Theme.ResultEntry" >
+        <activity android:name=".ViewPagerActivity"
+                  android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>  
         </activity>        
     
     </application>

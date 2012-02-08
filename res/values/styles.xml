@@ -35,4 +35,9 @@
         <item name="abBackground">@drawable/actionbar_background</item>
         <item name="abTitle">Bracket</item>
   </style>    
+
+  <style name="Widget.MyTitlepageIndicator" parent="Widget.TitlePageIndicator">
+       <!--   <item name="footerColor">#14A804</item> -->
+  </style>
+
 </resources>
