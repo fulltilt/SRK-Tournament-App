@@ -110,25 +110,7 @@ public class Bracket extends FragmentActivity  {
         if (extras != null) 
         	if (extras.getString("tournamentID") != null)
         		tournamentID = extras.getString("tournamentID");
-        
-        // display brackets
-        cursor = dbAdapter.getBrackets(tournamentID);
-        startManagingCursor(cursor);
-        
-        // Set up the adapter
-	    adapter = new SimpleCursorAdapter(this, R.layout.bracket_row, cursor, FROM, TO, 0);   
-	    adapter.setViewBinder(VIEW_BINDER);	// attach custom ViewBinder instance to vanilla adapter 
-	    listWinnersBracket.setAdapter(adapter); // 
-	    
-	    // handler when user clicks on a ListView item (in this case, have Context menu pop up)
-	    listWinnersBracket.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {    	
-            	registerForContextMenu(listWinnersBracket); 
-            	listWinnersBracket.setLongClickable(false);  // undo setting of this flag in registerForContextMenu
-                openContextMenu(view);
-            }
-        });
-*/  
+*/ 
     }
  
 	// context menu that pops up when user clicks a item in the ListView
@@ -246,22 +228,17 @@ public class Bracket extends FragmentActivity  {
 
         public Object instantiateItem(View pager, int position) {
             LayoutInflater inflater = (LayoutInflater) pager.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-View layout = null;
+
+            View view = null;
         	int resId = 0;
             switch (position) {
             case 0:
                     resId = R.layout.round_1;
-            		//resId = R.layout.right;
-layout = inflater.inflate(R.layout.round_1, null);
+                    
+                    view = inflater.inflate(R.layout.round_1, null);
             	
-/*                    //listWinnersBracket = (ListView) findViewById(R.id.winnersBracket);
-listWinnersBracket = (ListView) layout.findViewById(R.id.winnersBracket);
-                    
-                    Bundle extras = getIntent().getExtras();
-                    if (extras != null) 
-                    	if (extras.getString("tournamentID") != null)
-                    		tournamentID = extras.getString("tournamentID");
-                    
+					listWinnersBracket = (ListView) view.findViewById(R.id.winnersBracket);
+                        
                     // display brackets
                     cursor = dbAdapter.getBrackets(tournamentID);
                     startManagingCursor(cursor);
@@ -279,27 +256,25 @@ listWinnersBracket = (ListView) layout.findViewById(R.id.winnersBracket);
                             openContextMenu(view);
                         }
                     });
-*/                    
+                    
                     break;
             case 1:
             	    resId = R.layout.left;
+            	    view = inflater.inflate(resId, null);
                     break;
             case 2:
             		resId = R.layout.middle;
+            		view = inflater.inflate(resId, null);
                     break;
             case 3:
             		resId = R.layout.right;
+            		view = inflater.inflate(resId, null);
                     break;
             }
             
-            View view = inflater.inflate(resId, null);
-    	    
             ((ViewPager) pager).addView(view, 0);
 
             return view;
-            //((ViewPager) pager).addView(layout);
-
-            //return layout;
         }
 
         public void destroyItem(View arg0, int arg1, Object arg2) { ((ViewPager) arg0).removeView((View) arg2); }
