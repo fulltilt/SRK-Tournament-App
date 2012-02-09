@@ -3,22 +3,26 @@ package tournament.app;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitleProvider;
 
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
 //import android.support.v4.app.ActionBar;
 import android.support.v4.view.Menu;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.util.Log;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -30,7 +34,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import com.viewpagerindicator.TitleProvider;
 
-public class Bracket extends FragmentActivity implements TitleProvider {
+public class Bracket extends FragmentActivity  {
 	private static final String TAG = "Bracket";
 	private DBAdapter dbAdapter;
 	private Cursor cursor;
@@ -47,18 +51,6 @@ public class Bracket extends FragmentActivity implements TitleProvider {
 	private String tempP1, tempP2;
     
 	private static String[] tabTitles = new String[] { "Round 1", "Quarterfinals", "Semifinals", "Finals"};
-    private final Context context;
-    
-    public Bracket(Context context)
-    {
-        this.context = context;
-    }
-
-    // This is the only methods from TitleProvider and should return the title of page at the specified position. We return the relevant title from the titles array.
-    public String getTitle(int position)
-    {
-        return tabTitles[position];
-    }
     
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
@@ -101,12 +93,19 @@ public class Bracket extends FragmentActivity implements TitleProvider {
 //for (String s : winnersList)
 //	Log.d(TAG, s);
 
+        // handle the tabs and the horizontal scrolling
+		ViewPagerAdapter adapter = new ViewPagerAdapter(getBaseContext());
+		ViewPager pager = (ViewPager)findViewById(R.id.viewPager);
+		TitlePageIndicator indicator = (TitlePageIndicator)findViewById(R.id.indicator);
+		pager.setAdapter(adapter);
+		pager.setCurrentItem(0);
+		indicator.setViewPager(pager);
     }
     
 	protected void onResume() {
 		Log.d(TAG, "in onResume()");
         super.onResume();
- 
+/* 
         Bundle extras = getIntent().getExtras();
         if (extras != null) 
         	if (extras.getString("tournamentID") != null)
@@ -129,6 +128,7 @@ public class Bracket extends FragmentActivity implements TitleProvider {
                 openContextMenu(view);
             }
         });
+*/  
     }
  
 	// context menu that pops up when user clicks a item in the ListView
@@ -237,5 +237,79 @@ public class Bracket extends FragmentActivity implements TitleProvider {
           return true;	// return true so that SimpleCursorAdapter doesn't process bindView() on this element in its standard way
       }
     };
-    
+
+    private class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
+    	private final Context context;
+    	
+        public ViewPagerAdapter(Context context) { this.context = context; }      
+        public int getCount() { return tabTitles.length; }
+
+        public Object instantiateItem(View pager, int position) {
+            LayoutInflater inflater = (LayoutInflater) pager.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+View layout = null;
+        	int resId = 0;
+            switch (position) {
+            case 0:
+                    resId = R.layout.round_1;
+            		//resId = R.layout.right;
+layout = inflater.inflate(R.layout.round_1, null);
+            	
+/*                    //listWinnersBracket = (ListView) findViewById(R.id.winnersBracket);
+listWinnersBracket = (ListView) layout.findViewById(R.id.winnersBracket);
+                    
+                    Bundle extras = getIntent().getExtras();
+                    if (extras != null) 
+                    	if (extras.getString("tournamentID") != null)
+                    		tournamentID = extras.getString("tournamentID");
+                    
+                    // display brackets
+                    cursor = dbAdapter.getBrackets(tournamentID);
+                    startManagingCursor(cursor);
+                    
+                    // Set up the adapter
+            	    adapter = new SimpleCursorAdapter(context, R.layout.bracket_row, cursor, FROM, TO, 0);   
+            	    adapter.setViewBinder(VIEW_BINDER);	// attach custom ViewBinder instance to vanilla adapter 
+            	    listWinnersBracket.setAdapter(adapter); // 
+            	    
+            	    // handler when user clicks on a ListView item (in this case, have Context menu pop up)
+            	    listWinnersBracket.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {    	
+                        	registerForContextMenu(listWinnersBracket); 
+                        	listWinnersBracket.setLongClickable(false);  // undo setting of this flag in registerForContextMenu
+                            openContextMenu(view);
+                        }
+                    });
+*/                    
+                    break;
+            case 1:
+            	    resId = R.layout.left;
+                    break;
+            case 2:
+            		resId = R.layout.middle;
+                    break;
+            case 3:
+            		resId = R.layout.right;
+                    break;
+            }
+            
+            View view = inflater.inflate(resId, null);
+    	    
+            ((ViewPager) pager).addView(view, 0);
+
+            return view;
+            //((ViewPager) pager).addView(layout);
+
+            //return layout;
+        }
+
+        public void destroyItem(View arg0, int arg1, Object arg2) { ((ViewPager) arg0).removeView((View) arg2); }
+        public void finishUpdate(View arg0) { }
+        public boolean isViewFromObject(View arg0, Object arg1) { return arg0 == ((View) arg1); }
+        public void restoreState(Parcelable arg0, ClassLoader arg1) { }
+        public Parcelable saveState() { return null; }
+        public void startUpdate(View arg0) { }
+
+     // This is the only methods from TitleProvider and should return the title of page at the specified position. We return the relevant title from the titles array.
+        public String getTitle(int position) { return tabTitles[position]; }
+    }    
 }

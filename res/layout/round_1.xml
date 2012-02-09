@@ -3,17 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-
-    <com.viewpagerindicator.TitlePageIndicator
-        android:id="@+id/indicator"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewPager"
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1" />
-<!--              
+             
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,5 +41,5 @@
 			  android:layout_marginBottom="10sp"
 			  android:divider="@null"
 			  android:dividerHeight="10.0sp" />
-			  -->
+			  
 </LinearLayout>

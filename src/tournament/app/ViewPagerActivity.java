@@ -13,7 +13,7 @@ public class ViewPagerActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		ViewPagerAdapter adapter = new ViewPagerAdapter(this);
+		ViewPagerAdapter2 adapter = new ViewPagerAdapter2(this);
 		ViewPager pager = (ViewPager)findViewById(R.id.viewpager);
 		TitlePageIndicator indicator = (TitlePageIndicator)findViewById(R.id.indicator);
 		pager.setAdapter(adapter);
