@@ -38,7 +38,7 @@ public class DBAdapter {
 
     private static final String MATCH_TABLE_CREATE = 
             "create table match (_id integer primary key autoincrement, "
-        	+ "tournamentID integer, bracketLetter text, subBracketID integer, player1 text, player2 text, winner text, player1Wins integer, player2Wins integer)";
+        	+ "tournamentID integer, bracketLetter text, subBracketID integer, player1 text, player2 text, winner text)";
     
     private final Context context;    
     DatabaseHelper DBHelper;
@@ -162,10 +162,10 @@ public class DBAdapter {
     }  
     
     // get all matchups for a given tournament
-    public Cursor getBrackets(String tourneyID) 
+    public Cursor getBrackets(String tourneyID, String bracketWHERE) 
     {    	
         return db.query(MATCH_TABLE, new String[] {KEY_ROWID, KEY_BRACKET_LETTER, KEY_PLAYER1,
-        		KEY_PLAYER2}, "tournamentID = " + tourneyID, null, null, null, null, null);	
+        		KEY_PLAYER2}, "tournamentID = " + tourneyID + " " + bracketWHERE, null, null, null, null, null);	
     }    
 
     // insert a match into Match table
@@ -177,6 +177,18 @@ public class DBAdapter {
         initialValues.put(KEY_PLAYER1, player1);
         initialValues.put(KEY_PLAYER2, player2);
         return db.insert(MATCH_TABLE, null, initialValues);
+    }  
+
+    // update a match in Match table
+    public long updateMatch(String tournamentID, String bracketLetter, String winner, String player) 
+    {
+        ContentValues value = new ContentValues();
+
+        if (player.equals("player1"))
+        	value.put(KEY_PLAYER1, winner);
+        else
+        	value.put(KEY_PLAYER2, winner);
+        return db.update(MATCH_TABLE, value, "tournamentID = " + tournamentID + " AND bracketLetter = '"  + bracketLetter + "'", null);
     }  
     
     // get the rows from the Match table where the 'winner' column is null
@@ -194,8 +206,8 @@ public class DBAdapter {
     }  
     
     // get the winner of a match
-    public Cursor getWinner(String tournamentID, String player) {
-    	return db.query(MATCH_TABLE, new String[] {KEY_WINNER}, "tournamentID = " + tournamentID + " AND winner = '" + player + "'", 
+    public Cursor getWinner(String tournamentID, String player, String bracket) {
+    	return db.query(MATCH_TABLE, new String[] {KEY_WINNER}, "tournamentID = " + tournamentID + " AND winner = '" + player + "' AND bracketLetter = '" + bracket + "'", 
         		null, null, null, null, null);
     }
 }

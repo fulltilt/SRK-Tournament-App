@@ -76,9 +76,9 @@ public class HomeActivity extends FragmentActivity {
 					String tournamentID = cursor.getString(cursor.getColumnIndex(DBAdapter.KEY_ROWID));       
 					String name = cursor.getString(cursor.getColumnIndex(DBAdapter.KEY_TOURNAMENT_NAME));
 
-					cursor = dbAdapter.getBrackets(tournamentID);		
+					cursor = dbAdapter.getBrackets(tournamentID, "");		
 					startManagingCursor(cursor);       
-Log.d(TAG, tournamentID + " " + cursor.getCount());
+
                 	if (cursor.getCount() == 0) {
 	                	Intent newActivity = new Intent(view.getContext(), EntrantList.class);  
 	                	

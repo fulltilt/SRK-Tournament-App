@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+             
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/labelWinners"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+        
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/winnersBracket"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="center_horizontal"
+              android:layout_marginTop="10sp" 
+			  android:layout_marginLeft="10sp" 
+			  android:layout_marginRight="10sp"
+			  android:layout_marginBottom="10sp"
+			  android:listSelector="@android:color/transparent"
+			  android:divider="@null" 
+			  android:dividerHeight="10.0sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10sp" 
+        android:text="@string/labelLosers"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+        
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/losersBracket"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:gravity="center_horizontal"
+              android:layout_marginTop="10sp" 
+			  android:layout_marginLeft="10sp" 
+			  android:layout_marginRight="10sp"
+			  android:layout_marginBottom="10sp"
+			  android:divider="@null"
+			  android:dividerHeight="10.0sp" />
+			  
+</LinearLayout>
