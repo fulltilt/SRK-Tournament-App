@@ -42,9 +42,13 @@ public class Bracket extends FragmentActivity  {
 	static final int[] TO = { R.id.player1, R.id.player2 };
 	private String tournamentID;
 	private ArrayList<String> entrantsList = new ArrayList<String>(16);				// tournament starts with 16 players
-	private ArrayList<String> winnersQuarterFinals = new ArrayList<String>(Arrays.asList("TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD"));		// the quarterfinals have 8 players in Winners bracket
+/*	private ArrayList<String> winnersQuarterFinals = new ArrayList<String>(Arrays.asList("TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD"));		// the quarterfinals have 8 players in Winners bracket
 	private ArrayList<String> winnersSemiFinals = new ArrayList<String>(Arrays.asList("TBD", "TBD", "TBD", "TBD"));		// the semifinals have 4 players in Winners bracket
 	private ArrayList<String> winnersFinals = new ArrayList<String>(Arrays.asList("TBD", "TBD"));		// the finals have 2 players in Winners bracket
+*/	
+	private ArrayList<String> winnersQuarterFinals = new ArrayList<String>(8);		// the quarterfinals have 8 players in Winners bracket
+	private ArrayList<String> winnersSemiFinals = new ArrayList<String>(4);		// the semifinals have 4 players in Winners bracket
+	private ArrayList<String> winnersFinals = new ArrayList<String>(2);		// the finals have 2 players in Winners bracket	
 	private ArrayList<String> losersList = new ArrayList<String>();
 	private String tempP1, tempP2, currentBracketLetter;
 	private ViewPagerAdapter viewPagerAdapter = null;
@@ -75,21 +79,25 @@ public class Bracket extends FragmentActivity  {
         // create the initial list of entrants who will all initially be in winners bracket
         cursor = dbAdapter.getCurrentTournamentEntrants(tournamentID);
         startManagingCursor(cursor);
+Log.d(TAG, "cursor row count: " + cursor.getCount());        
         cursor.moveToFirst();
         int row = 0;
         while (cursor.isAfterLast() == false)
         {
-        	if (row++ < 8) {
+        	if (row < 8) {
         		entrantsList.add(cursor.getString(1));
         		entrantsList.add(cursor.getString(2));
+        		row++;
         	}
-        	else if (row++ < 12) {
+        	else if (row < 12) {
         		winnersQuarterFinals.add(cursor.getString(1));
         		winnersQuarterFinals.add(cursor.getString(2));
+        		row++;
         	}
-        	else if (row++ < 14) {
+        	else if (row < 14) {
         		winnersSemiFinals.add(cursor.getString(1));
         		winnersSemiFinals.add(cursor.getString(2));
+        		row++;
         	}
         	else {
         		winnersFinals.add(cursor.getString(1));
@@ -97,7 +105,7 @@ public class Bracket extends FragmentActivity  {
         	}
         	cursor.moveToNext();
         }
-        Log.d(TAG, entrantsList.size() + "");
+        //Log.d(TAG, entrantsList.size() + "");
 /*    	
         // construct the list according to the proper seeding order (update: EntrantList correctly seeds the entrants so this block is not needed
         if (winnersList == null) {
@@ -135,26 +143,31 @@ public class Bracket extends FragmentActivity  {
     	int bracketNum = info.position * 2;		// position refers to the position on the ListView. Multiplying by 2 since there are 2 entrants per position
 
     	if (viewPager.getCurrentItem() == 0) {
+Log.d(TAG, bracketNum + "");
     		tempP1 = entrantsList.get(bracketNum);
         	tempP2 = entrantsList.get(bracketNum + 1);
         	currentBracketLetter = round1BracketLetters[info.position];
     	} else if (viewPager.getCurrentItem() == 1) { 
+Log.d(TAG, bracketNum + "");    		
     		tempP1 = winnersQuarterFinals.get(bracketNum);
         	tempP2 = winnersQuarterFinals.get(bracketNum + 1);
         	currentBracketLetter = quarterFinalBracketLetters[info.position];
-    	} else if (viewPager.getCurrentItem() == 2) { 
+    	} else if (viewPager.getCurrentItem() == 2) {
+    		Log.d(TAG, bracketNum + "");    		
     		tempP1 = winnersSemiFinals.get(bracketNum);
         	tempP2 = winnersSemiFinals.get(bracketNum + 1);
         	currentBracketLetter = semiFinalBracketLetters[info.position];
-    	} else if (viewPager.getCurrentItem() == 3) { 
+    	} else if (viewPager.getCurrentItem() == 3) {
+Log.d(TAG, bracketNum + "");    		
     		tempP1 = winnersFinals.get(bracketNum);
         	tempP2 = winnersFinals.get(bracketNum + 1);
         	currentBracketLetter = "WO";
     	}
     	
 // snippet that makes sure that if the bracket has an unfilled entry to not have a popup box. Eventually, we'll take out the Toast when everything is working
-    	if (tempP1.equals("TBD") || tempP2.equals("TBD")) {
+    	if (tempP1 == null || tempP2 == null) {
     		Toast.makeText(getBaseContext(), "No display since the bracket isn't finalized", Toast.LENGTH_SHORT).show();
+    		Log.d(TAG, currentBracketLetter);
     		return;
     	}
     	
@@ -177,9 +190,8 @@ public class Bracket extends FragmentActivity  {
     	
     	// determine which bracket the winner goes to
     	if (currentBracketLetter == "WA") {
-    		dbAdapter.updateMatch(tournamentID, "WI", currentWinner, "player1"); //viewPagerAdapter.instantiateItem(pager, position);
+    		dbAdapter.updateMatch(tournamentID, "WI", currentWinner, "player1"); 
     		winnersQuarterFinals.set(0, currentWinner);
-    		//viewPagerAdapter.instantiateItem(viewPager, 1);
     	} else if (currentBracketLetter == "WB") { 
     		dbAdapter.updateMatch(tournamentID, "WI", currentWinner, "player2");
     		winnersQuarterFinals.set(1, currentWinner);
@@ -340,7 +352,7 @@ public class Bracket extends FragmentActivity  {
     	    listWinnersBracket.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 Log.d(TAG, "onItemClick()");
-                	registerForContextMenu(listWinnersBracket); 
+					registerForContextMenu(listWinnersBracket); 
                 	listWinnersBracket.setLongClickable(false);  // undo setting of this flag in registerForContextMenu
                     openContextMenu(view);
                 }
@@ -353,12 +365,17 @@ Log.d(TAG, "onItemClick()");
             return view;
         }
 
+        // this fxn is used when notifyDataSetChanged() is called. Results in the ViewPager being updated
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;	// item is no longer in the adapter
+        }
+
         public void destroyItem(View arg0, int arg1, Object arg2) { ((ViewPager) arg0).removeView((View) arg2); }
         public void finishUpdate(ViewGroup arg0) { }
         public boolean isViewFromObject(View arg0, Object arg1) { return arg0 == ((View) arg1); }
         public void restoreState(Parcelable arg0, ClassLoader arg1) { }
         public Parcelable saveState() { return null; }
-        public void startUpdate(View arg0) { }
+        public void startUpdate(ViewGroup arg0) { }
 
      // This is the only methods from TitleProvider and should return the title of page at the specified position. We return the relevant title from the titles array.
         public String getTitle(int position) { return tabTitles[position]; }
