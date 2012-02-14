@@ -180,14 +180,14 @@ public class DBAdapter {
     }  
 
     // update a match in Match table
-    public long updateMatch(String tournamentID, String bracketLetter, String winner, String player) 
+    public long updateMatch(String tournamentID, String bracketLetter, String playerName, String player) 
     {
         ContentValues value = new ContentValues();
 
         if (player.equals("player1"))
-        	value.put(KEY_PLAYER1, winner);
+        	value.put(KEY_PLAYER1, playerName);
         else
-        	value.put(KEY_PLAYER2, winner);
+        	value.put(KEY_PLAYER2, playerName);
         return db.update(MATCH_TABLE, value, "tournamentID = " + tournamentID + " AND bracketLetter = '"  + bracketLetter + "'", null);
     }  
     
@@ -198,11 +198,11 @@ public class DBAdapter {
     }
     
     // update the winner of a match
-    public long updateWinner(String tournamentID, String player1, String player2, String winner)
+    public long updateWinner(String tournamentID, String winner, String bracketLetter)
     {
         ContentValues value = new ContentValues();
         value.put(KEY_WINNER, winner);
-        return db.update(MATCH_TABLE, value, "tournamentID = " + tournamentID + " AND player1 = '" + player1 + "' AND player2 = '" + player2 + "'", null);
+        return db.update(MATCH_TABLE, value, "tournamentID = " + tournamentID + " AND bracketletter = '" + bracketLetter + "'", null);
     }  
     
     // get the winner of a match

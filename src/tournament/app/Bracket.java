@@ -1,12 +1,13 @@
 package tournament.app;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitleProvider;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -41,11 +42,7 @@ public class Bracket extends FragmentActivity  {
 	static final String[] FROM = { DBAdapter.KEY_PLAYER1, DBAdapter.KEY_PLAYER2 };  
 	static final int[] TO = { R.id.player1, R.id.player2 };
 	private String tournamentID;
-	private ArrayList<String> entrantsList = new ArrayList<String>(16);				// tournament starts with 16 players
-/*	private ArrayList<String> winnersQuarterFinals = new ArrayList<String>(Arrays.asList("TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD"));		// the quarterfinals have 8 players in Winners bracket
-	private ArrayList<String> winnersSemiFinals = new ArrayList<String>(Arrays.asList("TBD", "TBD", "TBD", "TBD"));		// the semifinals have 4 players in Winners bracket
-	private ArrayList<String> winnersFinals = new ArrayList<String>(Arrays.asList("TBD", "TBD"));		// the finals have 2 players in Winners bracket
-*/	
+	private ArrayList<String> entrantsList = new ArrayList<String>(16);				// tournament starts with 16 players	
 	private ArrayList<String> winnersQuarterFinals = new ArrayList<String>(8);		// the quarterfinals have 8 players in Winners bracket
 	private ArrayList<String> winnersSemiFinals = new ArrayList<String>(4);		// the semifinals have 4 players in Winners bracket
 	private ArrayList<String> winnersFinals = new ArrayList<String>(2);		// the finals have 2 players in Winners bracket	
@@ -58,7 +55,9 @@ public class Bracket extends FragmentActivity  {
 	private String[] round1BracketLetters = new String[] { "WA", "WB", "WC", "WD", "WE", "WF", "WG", "WH" }; 
 	private String[] quarterFinalBracketLetters = new String[] { "WI", "WJ", "WK", "WL" };
 	private String[] semiFinalBracketLetters = new String[] { "WM", "WN" };  
-    
+ 
+	private AlertDialog alertDialog; 
+	
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
     	Log.d(TAG, "In onCreate()");
@@ -79,7 +78,7 @@ public class Bracket extends FragmentActivity  {
         // create the initial list of entrants who will all initially be in winners bracket
         cursor = dbAdapter.getCurrentTournamentEntrants(tournamentID);
         startManagingCursor(cursor);
-Log.d(TAG, "cursor row count: " + cursor.getCount());        
+
         cursor.moveToFirst();
         int row = 0;
         while (cursor.isAfterLast() == false)
@@ -106,6 +105,9 @@ Log.d(TAG, "cursor row count: " + cursor.getCount());
         	cursor.moveToNext();
         }
         //Log.d(TAG, entrantsList.size() + "");
+        //Log.d(TAG, winnersQuarterFinals.size() + "");
+        //Log.d(TAG, winnersSemiFinals.size() + "");
+
 /*    	
         // construct the list according to the proper seeding order (update: EntrantList correctly seeds the entrants so this block is not needed
         if (winnersList == null) {
@@ -132,111 +134,6 @@ Log.d(TAG, "cursor row count: " + cursor.getCount());
 	protected void onResume() {
 		Log.d(TAG, "in onResume()");
         super.onResume();
-    }
- 
-	// context menu that pops up when user clicks a item in the ListView
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-    	Log.d(TAG, "onCreateContextMenu()");
-    	super.onCreateContextMenu(menu, v, menuInfo);
-    	
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-    	int bracketNum = info.position * 2;		// position refers to the position on the ListView. Multiplying by 2 since there are 2 entrants per position
-
-    	if (viewPager.getCurrentItem() == 0) {
-Log.d(TAG, bracketNum + "");
-    		tempP1 = entrantsList.get(bracketNum);
-        	tempP2 = entrantsList.get(bracketNum + 1);
-        	currentBracketLetter = round1BracketLetters[info.position];
-    	} else if (viewPager.getCurrentItem() == 1) { 
-Log.d(TAG, bracketNum + "");    		
-    		tempP1 = winnersQuarterFinals.get(bracketNum);
-        	tempP2 = winnersQuarterFinals.get(bracketNum + 1);
-        	currentBracketLetter = quarterFinalBracketLetters[info.position];
-    	} else if (viewPager.getCurrentItem() == 2) {
-    		Log.d(TAG, bracketNum + "");    		
-    		tempP1 = winnersSemiFinals.get(bracketNum);
-        	tempP2 = winnersSemiFinals.get(bracketNum + 1);
-        	currentBracketLetter = semiFinalBracketLetters[info.position];
-    	} else if (viewPager.getCurrentItem() == 3) {
-Log.d(TAG, bracketNum + "");    		
-    		tempP1 = winnersFinals.get(bracketNum);
-        	tempP2 = winnersFinals.get(bracketNum + 1);
-        	currentBracketLetter = "WO";
-    	}
-    	
-// snippet that makes sure that if the bracket has an unfilled entry to not have a popup box. Eventually, we'll take out the Toast when everything is working
-    	if (tempP1 == null || tempP2 == null) {
-    		Toast.makeText(getBaseContext(), "No display since the bracket isn't finalized", Toast.LENGTH_SHORT).show();
-    		Log.d(TAG, currentBracketLetter);
-    		return;
-    	}
-    	
-    	menu.setHeaderTitle("Pick the winner of the match");
-    	menu.add(1, 0, 0, tempP1);
-    	menu.add(1, 1, 0, tempP2);
-    }
-    
-    // handle when user clicks on a bracket context menu pops up that allows user to select a winner of a match
-    public boolean onContextItemSelected(android.view.MenuItem item) {
-    	String currentWinner = null;
-    	if (item.getItemId() == 0) {	// '0' refers to the 1st player in the Context menu
-    		currentWinner = tempP1;
-    		dbAdapter.updateWinner(tournamentID, tempP1, tempP2, currentWinner);
-    	}
-    	else if (item.getItemId() == 1) {	// '1' refers to the 2nd player in the Context menu
-    		currentWinner = tempP2;
-    		dbAdapter.updateWinner(tournamentID, tempP1, tempP2, currentWinner);
-    	}
-    	
-    	// determine which bracket the winner goes to
-    	if (currentBracketLetter == "WA") {
-    		dbAdapter.updateMatch(tournamentID, "WI", currentWinner, "player1"); 
-    		winnersQuarterFinals.set(0, currentWinner);
-    	} else if (currentBracketLetter == "WB") { 
-    		dbAdapter.updateMatch(tournamentID, "WI", currentWinner, "player2");
-    		winnersQuarterFinals.set(1, currentWinner);
-    	} else if (currentBracketLetter == "WC") {
-    		dbAdapter.updateMatch(tournamentID, "WJ", currentWinner, "player1");
-    		winnersQuarterFinals.set(2, currentWinner);
-    	} else if (currentBracketLetter == "WD") {
-    		dbAdapter.updateMatch(tournamentID, "WJ", currentWinner, "player2");
-    		winnersQuarterFinals.set(3, currentWinner);
-    	} else if (currentBracketLetter == "WE") {
-    		dbAdapter.updateMatch(tournamentID, "WK", currentWinner, "player1");
-    		winnersQuarterFinals.set(4, currentWinner);
-    	} else if (currentBracketLetter == "WF") {
-    		dbAdapter.updateMatch(tournamentID, "WK", currentWinner, "player2");
-    		winnersQuarterFinals.set(5, currentWinner);
-    	} else if (currentBracketLetter == "WG") {
-    		dbAdapter.updateMatch(tournamentID, "WL", currentWinner, "player1");
-    		winnersQuarterFinals.set(6, currentWinner);
-    	} else if (currentBracketLetter == "WH") {
-    		dbAdapter.updateMatch(tournamentID, "WL", currentWinner, "player2");
-    		winnersQuarterFinals.set(7, currentWinner);
-    	} else if (currentBracketLetter == "WI") {
-    		dbAdapter.updateMatch(tournamentID, "WM", currentWinner, "player1");
-    		winnersSemiFinals.set(0, currentWinner);
-    	} else if (currentBracketLetter == "WJ") {
-    		dbAdapter.updateMatch(tournamentID, "WM", currentWinner, "player2");
-    		winnersSemiFinals.set(1, currentWinner);
-    	} else if (currentBracketLetter == "WK") {
-    		dbAdapter.updateMatch(tournamentID, "WN", currentWinner, "player1");
-    		winnersSemiFinals.set(2, currentWinner);
-    	} else if (currentBracketLetter == "WL") {
-    		dbAdapter.updateMatch(tournamentID, "WN", currentWinner, "player2");
-    		winnersSemiFinals.set(3, currentWinner);
-    	} else if (currentBracketLetter == "WM") {
-    		dbAdapter.updateMatch(tournamentID, "WO", currentWinner, "player1");
-    		winnersFinals.set(0, currentWinner);
-    	} else if (currentBracketLetter == "WN") {
-    		dbAdapter.updateMatch(tournamentID, "WO", currentWinner, "player2");
-    		winnersFinals.set(1, currentWinner);
-    	} 
-    	
-    	adapter.notifyDataSetChanged();	// notify the adapter that the ListView should be refreshed
-    	viewPagerAdapter.notifyDataSetChanged();
-    	
-        return true;
     }
     
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -350,21 +247,157 @@ Log.d(TAG, bracketNum + "");
     	    
     	    // handler when user clicks on a ListView item (in this case, have Context menu pop up)
     	    listWinnersBracket.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-Log.d(TAG, "onItemClick()");
-					registerForContextMenu(listWinnersBracket); 
+                public void onItemClick(AdapterView<?> adapterView, View view, final int position, long id) {
                 	listWinnersBracket.setLongClickable(false);  // undo setting of this flag in registerForContextMenu
-                    openContextMenu(view);
+
+					int bracketNum = position * 2;		// position refers to the position on the ListView. Multiplying by 2 since there are 2 entrants per position
+					
+					if (viewPager.getCurrentItem() == 0) {
+						tempP1 = entrantsList.get(bracketNum);
+						tempP2 = entrantsList.get(bracketNum + 1);
+						currentBracketLetter = round1BracketLetters[position];
+					} else if (viewPager.getCurrentItem() == 1) { 
+						tempP1 = winnersQuarterFinals.get(bracketNum);
+						tempP2 = winnersQuarterFinals.get(bracketNum + 1);
+						currentBracketLetter = quarterFinalBracketLetters[position];
+					} else if (viewPager.getCurrentItem() == 2) {
+						tempP1 = winnersSemiFinals.get(bracketNum);
+						tempP2 = winnersSemiFinals.get(bracketNum + 1);
+						currentBracketLetter = semiFinalBracketLetters[position];
+					} else if (viewPager.getCurrentItem() == 3) {
+						tempP1 = winnersFinals.get(bracketNum);
+						tempP2 = winnersFinals.get(bracketNum + 1);
+						currentBracketLetter = "WO";
+					}
+					
+					//snippet that makes sure that if the bracket has an unfilled entry to not have a popup box. Eventually, we'll take out the Toast when everything is working
+					if (tempP1 == null || tempP2 == null) {
+						Toast.makeText(getBaseContext(), "No display since the bracket isn't finalized", Toast.LENGTH_SHORT).show();
+						Log.d(TAG, currentBracketLetter);
+						return;
+					}
+					
+					final CharSequence[] items = { tempP1, tempP2 };
+					
+					//alertDialog = new AlertDialog.Builder(Bracket.this).create();
+					AlertDialog.Builder builder = new AlertDialog.Builder(Bracket.this);
+					builder.setTitle("Pick the winner of the match");
+					
+					//AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+					    public void onClick(DialogInterface dialog, int item) {
+					    	String currentWinner = null;
+					    	if (item == 0) {	// '0' refers to the 1st player in the Context menu
+					    		currentWinner = tempP1;
+					    		dbAdapter.updateWinner(tournamentID, currentWinner, currentBracketLetter);
+					    	}
+					    	else if (item == 1) {	// '1' refers to the 2nd player in the Context menu
+					    		currentWinner = tempP2;
+					    		dbAdapter.updateWinner(tournamentID, currentWinner, currentBracketLetter);
+					    	}
+					    	
+					    	// determine which bracket the winner goes to
+					    	if (currentBracketLetter == "WA") { //remove WM player 1, WO player 1
+					    		dbAdapter.updateMatch(tournamentID, "WI", currentWinner, "player1"); 
+					    		dbAdapter.updateMatch(tournamentID, "WM", null, "player1"); dbAdapter.updateWinner(tournamentID, null, "WM");
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player1"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersQuarterFinals.set(0, currentWinner);
+					    		winnersSemiFinals.set(0, null);
+					    		winnersFinals.set(0, null);
+					    	} else if (currentBracketLetter == "WB") { //remove WM player 1, WO player 1 
+					    		dbAdapter.updateMatch(tournamentID, "WI", currentWinner, "player2");
+					    		dbAdapter.updateMatch(tournamentID, "WM", null, "player1"); dbAdapter.updateWinner(tournamentID, null, "WM");
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player1"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersQuarterFinals.set(1, currentWinner);
+					    		winnersSemiFinals.set(0, null);
+					    		winnersFinals.set(0, null);
+					    	} else if (currentBracketLetter == "WC") { //remove WM player 2, WO player 2
+					    		dbAdapter.updateMatch(tournamentID, "WJ", currentWinner, "player1");
+					    		dbAdapter.updateMatch(tournamentID, "WM", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WM");
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersQuarterFinals.set(2, currentWinner);
+					    		winnersSemiFinals.set(1, null);
+					    		winnersFinals.set(0, null);
+					    	} else if (currentBracketLetter == "WD") { //remove WM player 2, WO player 1
+					    		dbAdapter.updateMatch(tournamentID, "WJ", currentWinner, "player2");
+					    		dbAdapter.updateMatch(tournamentID, "WM", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WM");
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersQuarterFinals.set(3, currentWinner);
+					    		winnersSemiFinals.set(1, null);
+					    		winnersFinals.set(0, null);
+					    	} else if (currentBracketLetter == "WE") { //remove WN player 1, WO player 2
+					    		dbAdapter.updateMatch(tournamentID, "WK", currentWinner, "player1");
+					    		dbAdapter.updateMatch(tournamentID, "WN", null, "player1"); dbAdapter.updateWinner(tournamentID, null, "WN");
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersQuarterFinals.set(4, currentWinner);
+					    		winnersSemiFinals.set(2, null);
+					    		winnersFinals.set(1, null);
+					    	} else if (currentBracketLetter == "WF") { //remove WN player 1, WO player 2
+					    		dbAdapter.updateMatch(tournamentID, "WK", currentWinner, "player2");
+					    		dbAdapter.updateMatch(tournamentID, "WN", null, "player1"); dbAdapter.updateWinner(tournamentID, null, "WN");
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersQuarterFinals.set(5, currentWinner);
+					    		winnersSemiFinals.set(2, null);
+					    		winnersFinals.set(1, null);
+					    	} else if (currentBracketLetter == "WG") { //remove WN player 2, WO player 2
+					    		dbAdapter.updateMatch(tournamentID, "WL", currentWinner, "player1");
+					    		dbAdapter.updateMatch(tournamentID, "WN", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WN");
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersQuarterFinals.set(6, currentWinner);
+					    		winnersSemiFinals.set(2, null);
+					    		winnersFinals.set(1, null);
+					    	} else if (currentBracketLetter == "WH") { //remove WN player 2, WO player 2
+					    		dbAdapter.updateMatch(tournamentID, "WL", currentWinner, "player2");
+					    		dbAdapter.updateMatch(tournamentID, "WN", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WN");
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersQuarterFinals.set(7, currentWinner);
+					    		winnersSemiFinals.set(2, null);
+					    		winnersFinals.set(1, null);
+					    	} else if (currentBracketLetter == "WI") { //remove WO player 1
+					    		dbAdapter.updateMatch(tournamentID, "WM", currentWinner, "player1"); 
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player1"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersSemiFinals.set(0, currentWinner);
+					    		winnersFinals.set(0, null);
+					    	} else if (currentBracketLetter == "WJ") { //remove WO player 1
+					    		dbAdapter.updateMatch(tournamentID, "WM", currentWinner, "player2"); 
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player1"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersSemiFinals.set(1, currentWinner);
+					    		winnersFinals.set(0, null);
+					    	} else if (currentBracketLetter == "WK") { //remove WO player 2
+					    		dbAdapter.updateMatch(tournamentID, "WN", currentWinner, "player1");
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersSemiFinals.set(2, currentWinner);
+					    		winnersFinals.set(1, null);
+					    	} else if (currentBracketLetter == "WL") { //remove WO player 2
+					    		dbAdapter.updateMatch(tournamentID, "WN", currentWinner, "player2");
+					    		dbAdapter.updateMatch(tournamentID, "WO", null, "player2"); dbAdapter.updateWinner(tournamentID, null, "WO");
+					    		winnersSemiFinals.set(3, currentWinner);
+					    		winnersFinals.set(1, null);
+					    	} else if (currentBracketLetter == "WM") {
+					    		dbAdapter.updateMatch(tournamentID, "WO", currentWinner, "player1");
+					    		winnersFinals.set(0, currentWinner);
+					    	} else if (currentBracketLetter == "WN") {
+					    		dbAdapter.updateMatch(tournamentID, "WO", currentWinner, "player2");
+					    		winnersFinals.set(1, currentWinner);
+					    	} 
+					    	
+					    	adapter.notifyDataSetChanged();				// notify the adapter that the ListView should be refreshed
+					    	viewPagerAdapter.notifyDataSetChanged();	// notify the PagerAdapter that the ViewPager should be refreshed
+
+					        alertDialog.dismiss();
+					    }
+					});
+					
+					alertDialog = builder.create();
+					alertDialog.show();
                 }
             });
     	    
             ((ViewPager) pager).addView(view, 0);
-            //viewPager.setAdapter(viewPagerAdapter);
-            //finishUpdate(pager);
             
             return view;
         }
-
+        
         // this fxn is used when notifyDataSetChanged() is called. Results in the ViewPager being updated
         public int getItemPosition(Object object) {
             return POSITION_NONE;	// item is no longer in the adapter
@@ -377,7 +410,7 @@ Log.d(TAG, "onItemClick()");
         public Parcelable saveState() { return null; }
         public void startUpdate(ViewGroup arg0) { }
 
-     // This is the only methods from TitleProvider and should return the title of page at the specified position. We return the relevant title from the titles array.
+        // This is the only method from TitleProvider and should return the title of page at the specified position. We return the relevant title from the titles array.
         public String getTitle(int position) { return tabTitles[position]; }
     }    
 }
