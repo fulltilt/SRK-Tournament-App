@@ -1,4 +1,4 @@
-package tournament.app;
+  package tournament.app;
 
 import java.util.ArrayList;
 
@@ -79,8 +79,9 @@ public class HomeActivity extends FragmentActivity {
 					cursor = dbAdapter.getBrackets(tournamentID, "");		
 					startManagingCursor(cursor);       
 
+					Intent newActivity = null;
                 	if (cursor.getCount() == 0) {
-	                	Intent newActivity = new Intent(view.getContext(), EntrantList.class);  
+	                	newActivity = new Intent(view.getContext(), EntrantList.class);  
 	                	
 	                	extras.putString("name", name);
 	                	extras.putString("tournamentID", tournamentID);
@@ -89,13 +90,21 @@ public class HomeActivity extends FragmentActivity {
 	                    startActivity(newActivity);
                 	}
                 	else {
-	                	Intent newActivity = new Intent(view.getContext(), Bracket.class);
+                		cursor = dbAdapter.getTournamentFormat(tournamentID); // returns tournament format
+                		startManagingCursor(cursor);
+                		cursor.moveToFirst();
+
+                		// if tournament format is '1', go to SingleEliminationBracket else go to DoubleEliminationBracket
+                		if (cursor.getInt(cursor.getColumnIndex(DBAdapter.KEY_FORMAT)) == 1)
+                			newActivity = new Intent(view.getContext(), SingleEliminationBracket.class);
+                		else
+                			newActivity = new Intent(view.getContext(), DoubleEliminationBracket.class);
 	                	
 	                	extras.putString("name", name);
 	                	extras.putString("tournamentID", tournamentID);
 	                	newActivity.putExtras(extras);
 	                	newActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	                    startActivity(newActivity);
+	                    startActivity(newActivity); 
                 	}
                 }
             });

@@ -26,15 +26,15 @@ public class DBAdapter {
     public static final String PLAYER_TABLE = "player";
     public static final String TOURNAMENT_TABLE = "tournament";
     public static final String MATCH_TABLE = "match";
-    static final int DATABASE_VERSION = 2;
+    static final int DATABASE_VERSION = 3;
 
     private static final String PLAYER_TABLE_CREATE =
         "create table player (_id integer primary key autoincrement, "
-        + "name unique text not null, phone text)";
+        + "name text unique not null, phone text)";
     
     private static final String TOURNAMENT_TABLE_CREATE = 
         "create table tournament (_id integer primary key autoincrement, "
-    	+ "name unique text not null, date text not null, format integer)";
+    	+ "name text unique not null, date text not null, format integer)";
 
     private static final String MATCH_TABLE_CREATE = 
             "create table match (_id integer primary key autoincrement, "
@@ -60,7 +60,7 @@ public class DBAdapter {
         @Override
         public void onCreate(SQLiteDatabase db) 
         {
-        	Log.d(TAG, "in onCreate()");
+        	Log.d(TAG, "in DatabaseHelper onCreate()");
         	try {
         		db.execSQL(PLAYER_TABLE_CREATE);
         		db.execSQL(TOURNAMENT_TABLE_CREATE);
@@ -68,6 +68,40 @@ public class DBAdapter {
         	} catch (SQLException e) {
         		e.printStackTrace();
         	}
+        	
+
+db.execSQL("insert into match values (null, 1, 'WA', 1, 'Daigo', 'Alex Valle', null)");
+db.execSQL("insert into match values (null, 1, 'WB', 1, 'Tokido', 'Momochi', null)");
+db.execSQL("insert into match values (null, 1, 'WC', 1, 'Poongko', 'Filipino Champ', null)");
+db.execSQL("insert into match values (null, 1, 'WD', 1, 'Flash Metroid', 'Combofiend', null)");
+db.execSQL("insert into match values (null, 1, 'WE', 1, 'Dr Ray', '801 Strider', null)");
+db.execSQL("insert into match values (null, 1, 'WF', 1, 'Justin Wong', 'Latif', null)");
+db.execSQL("insert into match values (null, 1, 'WG', 1, 'Fuudo', 'Kun Xian', null)");
+db.execSQL("insert into match values (null, 1, 'WH', 1, 'Wolfkrone', 'CJ Truth', null)");
+db.execSQL("insert into match values (null, 1, 'WI', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'WJ', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'WK', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'WL', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'WM', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'WN', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'WO', 1, null, null, null)");
+
+db.execSQL("insert into match values (null, 1, 'LA', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LB', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LC', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LD', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LE', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LF', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LG', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LH', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LI', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LJ', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LK', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LL', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LM', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LN', 1, null, null, null)");
+db.execSQL("insert into match values (null, 1, 'LO', 1, null, null, null)");
+
         }
 
         @Override
@@ -77,6 +111,7 @@ public class DBAdapter {
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS tournament");
             db.execSQL("DROP TABLE IF EXISTS player");
+            db.execSQL("DROP TABLE IF EXISTS match");
             onCreate(db);
         }
     }    
@@ -112,17 +147,15 @@ public class DBAdapter {
     //---retrieves all the players---
     public Cursor getAllPlayers() 
     {
-        return db.query(PLAYER_TABLE, new String[] {KEY_ROWID, KEY_PLAYER_NAME,
-                KEY_PHONE}, null, null, null, null, null);
+        return db.query(PLAYER_TABLE, new String[] {KEY_ROWID, KEY_PLAYER_NAME, KEY_PHONE}, null, null, null, null, null);
     }
 
     //---retrieves a particular player---
     public Cursor getPlayer(long rowId) throws SQLException 
     {
         Cursor mCursor =
-                db.query(true, PLAYER_TABLE, new String[] {KEY_ROWID,
-                KEY_PLAYER_NAME, KEY_PHONE}, KEY_ROWID + "=" + rowId, null,
-                null, null, null, null);
+                db.query(true, PLAYER_TABLE, new String[] {KEY_ROWID, KEY_PLAYER_NAME, KEY_PHONE}, KEY_ROWID + "=" + rowId, null, null, null, null, null);
+        
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
@@ -144,11 +177,17 @@ public class DBAdapter {
         return db.query(TOURNAMENT_TABLE, null, null, null, null, null, KEY_DATE + " DESC");
     }
 
+    // retrieves a tournaments format. Used to determine whether to call the SingleEliminationBracket Activity or DoubeEliminationBracket Activity 
+    public Cursor getTournamentFormat(String tournamentID) 
+    {
+        return db.query(TOURNAMENT_TABLE, new String[] { KEY_ROWID, KEY_FORMAT }, KEY_ROWID + " = " + tournamentID, null, null, null, null);
+    }
+    
     // returns player1 and player2 of a given tournament bracket
-    public Cursor getCurrentTournamentEntrants(String tourneyID) 
+    public Cursor getCurrentTournamentEntrants(String tournamentID) 
     {    	
         return db.query(MATCH_TABLE, new String[] {KEY_BRACKET_LETTER, KEY_PLAYER1,
-        		KEY_PLAYER2}, "tournamentID = " + tourneyID, null, null, null, null, null);	
+        		KEY_PLAYER2}, "tournamentID = " + tournamentID, null, null, null, null, null);	
     }
     
     //---insert a contact into the database---
