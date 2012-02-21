@@ -208,7 +208,7 @@ db.execSQL("insert into match values (null, 1, 'LO', 1, null, null, null)");
     }    
 
     // insert a match into Match table
-    public long insertMatch(String tournamentID, String bracketLetter, String player1, String player2) 
+    public long insertMatch(String bracketLetter, String tournamentID, String player1, String player2) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_TOURNAMENT_ID, Integer.parseInt(tournamentID));

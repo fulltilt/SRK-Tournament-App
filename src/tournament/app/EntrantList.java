@@ -251,6 +251,9 @@ Log.d(TAG, "past mActionMode != null in setOnLongClickListener()");
         		}
         		catch (Exception e) { Log.d(TAG, "Error while attempting to insert a match!"); e.printStackTrace(); }
 	        	
+	        	Toast.makeText(getBaseContext(), "Tournament entrants have been seeded!!", Toast.LENGTH_LONG).show();
+// Code to go back to HomeActivity here
+	        	
 	        	return true;
 	        default:
 	        	return false;	// this is here in case we use the pop-up menu 

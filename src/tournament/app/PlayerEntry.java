@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.MenuInflater;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
+//import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.*;
@@ -42,7 +42,8 @@ public class PlayerEntry extends FragmentActivity {
         String[] players;
         Cursor cursor = dbAdapter.getAllPlayers();
         startManagingCursor(cursor);
-/*       
+       
+        // block of code where the AutoCompleteText derives data from
         if(cursor.getCount() > 0)
         {
             players = new String[cursor.getCount()];
@@ -58,8 +59,8 @@ public class PlayerEntry extends FragmentActivity {
         {
             players = new String[] {};
         }
-*/
-players = new String[] {};	// temporarily commented above out due to errors
+
+//players = new String[] {};	// temporarily commented above out due to errors
 
         // have the player name entry field autocomplete options come from database
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, players);
@@ -122,19 +123,16 @@ players = new String[] {};	// temporarily commented above out due to errors
 	        	else if (entrants.contains(name)) {
 	        		Toast.makeText(getBaseContext(), "Player name already on the list!!", Toast.LENGTH_LONG).show();
 	        		break;
-	        	}
-	        		
-	        	else {
+	        	} else {
 	        		if (index != -1)	// maintain the order if we're editing a ListView item
 	        			entrants.add(index, name);
 	        		else
 	        			entrants.add(name);	
-	        	}
-	        		
+	        	}	        		
 	            
-	        	// if the row is added, insert returns a 'long' id of the row. Once this is done, go back to home
+	        	// if the row is added, insert returns a 'long' id of the row. Once this is done, go back to home. If player is already in list of players, returns -1 
 long rowID = dbAdapter.insertPlayer(name, "");  /**** phone blank for now ****/
-//long rowID = 1;
+rowID = 1; // here for now because the previous line also returns -1 for duplicate entries
 	            if (rowID != -1) {
 	            	Toast.makeText(getBaseContext(), "Player entered successfully!", Toast.LENGTH_LONG).show();
 		            intent = new Intent(this, EntrantList.class);
